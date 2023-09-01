@@ -1,14 +1,15 @@
-node {
-    stage('Checkout') {
-        checkout scm
-    }
-    stage('Build') {
-        sh 'echo "Build"'
-    }
-    stage('Test') {
-        sh 'echo "Test"'
-    }
-    stage('Deploy') {
-        sh 'echo "Deploy"'
+pipeline {
+    agent any
+    stages {
+        stage('build') {
+            steps {
+                echo "parentJob"
+            }
+        }
+        stage('triggerChildJob') {
+            steps {
+                build job: "childJob", wait: true
+            }
+        }
     }
 }
