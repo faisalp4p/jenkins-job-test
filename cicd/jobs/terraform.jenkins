@@ -1,0 +1,31 @@
+#!/usr/bin/env groovy
+
+pipelineJob('terraform-job') {
+    displayName('Terraform pipeline')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/faisalp4p/jenkins-job-test.git')
+                        credentials('jenkins-operator')
+                    }
+                    branches('*/main')
+                }
+            }
+            scriptPath('cicd/pipelines/terraform.jenkins')
+        }
+    }
+}
