@@ -42,6 +42,7 @@ job('Demo/Build') {
         //     }
         // }
         downstream('Demo/Sonar', 'SUCCESS')
+        buildPipelineTrigger('Demo/DeployCI')
     }
 }
 
