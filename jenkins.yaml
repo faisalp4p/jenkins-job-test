@@ -15,6 +15,11 @@ spec:
   jenkinsAPISettings:
     authorizationStrategy: createUser
   master:
+    plugins:
+      - name: build-pipeline-plugin
+        version: "1.5.8"
+      - name: delivery-pipeline-plugin
+        version: "1.4.2"
     disableCSRFProtection: false
     containers:
       - name: jenkins-master
