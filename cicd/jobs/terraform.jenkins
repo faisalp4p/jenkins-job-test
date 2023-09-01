@@ -54,6 +54,10 @@ job('Demo/Sonar') {
         }
     }
 
+    publishers {
+        buildPipelineTrigger('Demo/Build')
+    }
+
     wrappers {
         buildName('\$PIPELINE_VERSION')
     }
