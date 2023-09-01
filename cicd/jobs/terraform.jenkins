@@ -6,7 +6,10 @@ deliveryPipelineView('Demo/Pipeline') {
     pipelineInstances(5)
     allowPipelineStart()
     enableManualTriggers()
+    enablePaging()
+    linkToConsoleLog()
     showChangeLog()
+    showDescription()
     pipelines {
         component('Component', 'Demo/Build')
     }
