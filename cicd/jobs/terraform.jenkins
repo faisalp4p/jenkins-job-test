@@ -28,19 +28,20 @@ job('Demo/Build') {
         deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
     }
     publishers {
-        downstreamParameterized {
-            trigger('Demo/Sonar') {
-                parameters {
-                    currentBuild()
-                }
-            }
-            trigger('Demo/DeployCI') {
-                condition('SUCCESS')
-                parameters {
-                    currentBuild()
-                }
-            }
-        }
+        // downstreamParameterized {
+        //     trigger('Demo/Sonar') {
+        //         parameters {
+        //             currentBuild()
+        //         }
+        //     }
+        //     trigger('Demo/DeployCI') {
+        //         condition('SUCCESS')
+        //         parameters {
+        //             currentBuild()
+        //         }
+        //     }
+        // }
+        downstream('Demo/Sonar', 'SUCCESS')
     }
 }
 
