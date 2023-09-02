@@ -1,31 +1,91 @@
-#!/usr/bin/env groovy
+// import groovy.yaml.Yaml
 
-pipelineJob('terraform-fp') {
-    displayName('Terraform pipelines build - fp')
+// def yamlDir = "cicd/configs"
 
-    logRotator {
-        numToKeep(10)
-        daysToKeep(30)
-    }
+// def yamlFiles = findFiles(glob: "${yamlDir}/*.yaml")
 
-    configure { project ->
-        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
-            hint('PERFORMANCE_OPTIMIZED')
-        }
-    }
+// def findFiles(def args) {
+//     def step = findFiles(args)
+//     step.setDelegate(build)
+//     step.setBinding(build.executor, build.workspace)
+//     step.call()
+// }
 
-    definition {
-        cpsScm {
-            scm {
-                git {
-                    remote {
-                        url('https://github.com/faisalp4p/jenkins-job-test.git')
-                        credentials('jenkins-operator')
-                    }
-                    branches('*/main')
-                }
-            }
-            scriptPath('cicd/pipelines/terraform2.jenkins')
-        }
-    }
-}
+// def makeStage(def dir, def dStream) {
+//     job("${dir}-plan") {
+//         deliveryPipelineConfiguration("${dir}", "Plan")
+
+//         wrappers {
+//             buildName('\$PIPELINE_VERSION')
+//         }
+
+//         steps {
+//             shell 'pwd && ls'
+//         }
+
+//         publishers {
+//             buildPipelineTrigger("${dir}-apply")
+//         }
+//     }
+
+//      job("${dir}-apply") {
+//         deliveryPipelineConfiguration("${dir}", "Apply")
+
+//         wrappers {
+//             buildName('\$PIPELINE_VERSION')
+//         }
+
+//         steps {
+//             shell 'sleep 10'
+//         }
+
+//         if (dStream?.trim()) {
+//             publishers {
+//                 downstream("${dStream}-plan", 'SUCCESS')
+//             }
+//         }
+//     }
+
+// }
+
+// def makePiepine(def stage) {  
+//     if (stage.next) {
+//         dStream = stage.next
+//     } else {
+//         dStream = ""
+//     }
+//     makeStage(stage.dir, dStream)
+//     if (stage.next) {
+//         makePiepine(stage.next)
+//     }
+// }
+
+// yamlFiles.each { yamlFile ->
+//     def yamlContent = readFile(yamlFile.toString())
+//     def config = new Yaml().load(yamlContent)
+
+//     deliveryPipelineView("Terraform - Pipeline ${config.repo}") {
+//         pipelineInstances(5)
+//         allowPipelineStart()
+//         enableManualTriggers()
+//         enablePaging()
+//         linkToConsoleLog()
+//         showChangeLog()
+//         showDescription()
+//         pipelines {
+//             component("Terraform env pipeline ${config.repo}", "Build-${config.repo}")
+//         }
+//     }
+
+//     job("Build-${config.repo}") {
+//         deliveryPipelineConfiguration("Build", "Build")
+//         wrappers {
+//             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
+//         }
+//         publishers {
+//             downstream("${config.pipeline.dir}-plan", 'SUCCESS')
+//         }
+//     }
+//     makePiepine(config.pipeline)
+
+// }
