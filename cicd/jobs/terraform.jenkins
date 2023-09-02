@@ -10,7 +10,7 @@ deliveryPipelineView('Terraform/Pipeline') {
     showChangeLog()
     showDescription()
     pipelines {
-        component('Component', 'Terraform/Build')
+        component('Terraform env pipeline', 'Terraform/Build')
     }
 }
 
