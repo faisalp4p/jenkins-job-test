@@ -16,13 +16,6 @@ deliveryPipelineView('Terraform/Pipeline') {
 
 job('Terraform/Build') {
     deliveryPipelineConfiguration("Build", "Build")
-    scm {
-        git {
-            remote {
-                url('https://github.com/Diabol/delivery-pipeline-plugin')
-            }
-        }
-    }
     wrappers {
         deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
     }
