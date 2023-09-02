@@ -1,0 +1,5 @@
+repo: abc
+pipeline:
+  dir: foo1
+  next:
+    dir: foo2

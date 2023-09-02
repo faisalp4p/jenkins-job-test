@@ -1,0 +1,5 @@
+repo: foobar
+pipeline:
+  dir: dir1
+  next:
+    dir: dir2
