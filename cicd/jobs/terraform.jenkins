@@ -11,11 +11,11 @@ for (int i = 1; i <= 5; i++) {
         showChangeLog()
         showDescription()
         pipelines {
-            component("Terraform env pipeline-${i}", "Terraform/Build-${i}")
+            component("Terraform env pipeline-${i}", "Terraform/Build")
         }
     }
 
-    job("Terraform/Build-${i}") {
+    job("Terraform/Build") {
         deliveryPipelineConfiguration("Build", "Build")
         wrappers {
             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
@@ -34,12 +34,12 @@ for (int i = 1; i <= 5; i++) {
             //         }
             //     }
             // }
-            downstream("Terraform/env-dev-plan-${i}", 'SUCCESS')
+            downstream("Terraform/env-dev-plan", 'SUCCESS')
         }
     }
 
 
-    job("Terraform/env-dev-plan-${i}") {
+    job("Terraform/env-dev-plan") {
         deliveryPipelineConfiguration("env-dev-${i}", "Plan")
 
         wrappers {
@@ -51,11 +51,11 @@ for (int i = 1; i <= 5; i++) {
         }
 
         publishers {
-            buildPipelineTrigger("Terraform/env-dev-apply-${i}")
+            buildPipelineTrigger("Terraform/env-dev-apply")
         }
     }
 
-    job("Terraform/env-dev-apply-${i}") {
+    job("Terraform/env-dev-apply") {
         deliveryPipelineConfiguration("env-dev-${i}", "Apply")
 
         wrappers {
@@ -68,11 +68,11 @@ for (int i = 1; i <= 5; i++) {
 
 
         publishers {
-        downstream("Terraform/env-prod-plan-${i}", 'SUCCESS')
+        downstream("Terraform/env-prod-plan", 'SUCCESS')
         }
     }
 
-    job("Terraform/env-prod-plan-${i}") {
+    job("Terraform/env-prod-plan") {
         deliveryPipelineConfiguration("env-prod-${i}", "Plan")
 
         wrappers {
@@ -85,12 +85,12 @@ for (int i = 1; i <= 5; i++) {
 
         publishers {
             publishers {
-            buildPipelineTrigger("Terraform/env-prod-apply ${i}")
+            buildPipelineTrigger("Terraform/env-prod-apply")
         }
         }
     }
 
-    job("Terraform/env-prod-apply-${i}") {
+    job("Terraform/env-prod-apply") {
         deliveryPipelineConfiguration("env-prod-${i}", "Apply")
 
         wrappers {
