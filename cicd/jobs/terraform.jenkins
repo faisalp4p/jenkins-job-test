@@ -10,7 +10,7 @@ deliveryPipelineView('Demo/Pipeline') {
     showChangeLog()
     showDescription()
     pipelines {
-        component('Component', 'Demo/Build')
+        component('Component', 'Build')
     }
 }
 
