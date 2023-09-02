@@ -1,142 +1,144 @@
 #!/usr/bin/env groovy
-folder('Terraform')
+for (int i = 1; i <= 5; i++) {
+    folder("Terraform $i")
 
-deliveryPipelineView('Terraform/Pipeline') {
-    pipelineInstances(5)
-    allowPipelineStart()
-    enableManualTriggers()
-    enablePaging()
-    linkToConsoleLog()
-    showChangeLog()
-    showDescription()
-    pipelines {
-        component('Terraform env pipeline', 'Terraform/Build')
+    deliveryPipelineView("Terraform/Pipeline $i") {
+        pipelineInstances(5)
+        allowPipelineStart()
+        enableManualTriggers()
+        enablePaging()
+        linkToConsoleLog()
+        showChangeLog()
+        showDescription()
+        pipelines {
+            component("Terraform env pipeline $i", "Terraform/Build $i")
+        }
     }
-}
 
-job('Terraform/Build') {
-    deliveryPipelineConfiguration("Build", "Build")
-    wrappers {
-        deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
+    job("Terraform/Build $i") {
+        deliveryPipelineConfiguration("Build", "Build")
+        wrappers {
+            deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
+        }
+        publishers {
+            // downstreamParameterized {
+            //     trigger('Demo/Sonar') {
+            //         parameters {
+            //             currentBuild()
+            //         }
+            //     }
+            //     trigger('Demo/DeployCI') {
+            //         condition('SUCCESS')
+            //         parameters {
+            //             currentBuild()
+            //         }
+            //     }
+            // }
+            downstream("Terraform/env-dev-plan $i", 'SUCCESS')
+        }
     }
-    publishers {
-        // downstreamParameterized {
-        //     trigger('Demo/Sonar') {
-        //         parameters {
-        //             currentBuild()
-        //         }
-        //     }
-        //     trigger('Demo/DeployCI') {
-        //         condition('SUCCESS')
-        //         parameters {
-        //             currentBuild()
-        //         }
+
+
+    job("Terraform/env-dev-plan $i") {
+        deliveryPipelineConfiguration("env-dev $i", "Plan")
+
+        wrappers {
+            buildName('\$PIPELINE_VERSION')
+        }
+
+        steps {
+            shell 'sleep 5'
+        }
+
+        publishers {
+            buildPipelineTrigger("Terraform/env-dev-apply $i")
+        }
+    }
+
+    job("Terraform/env-dev-apply $i") {
+        deliveryPipelineConfiguration("env-dev $i", "Apply")
+
+        wrappers {
+            buildName('\$PIPELINE_VERSION')
+        }
+
+        steps {
+            shell 'sleep 10'
+        }
+
+
+        publishers {
+        downstream("Terraform/env-prod-plan $i", 'SUCCESS')
+        }
+    }
+
+    job("Terraform/env-prod-plan $i") {
+        deliveryPipelineConfiguration("env-prod $i", "Plan")
+
+        wrappers {
+            buildName('\$PIPELINE_VERSION')
+        }
+
+        steps {
+            shell 'sleep 5'
+        }
+
+        publishers {
+            publishers {
+            buildPipelineTrigger("Terraform/env-prod-apply $i")
+        }
+        }
+    }
+
+    job("Terraform/env-prod-apply $i") {
+        deliveryPipelineConfiguration("env-prod $i", "Apply")
+
+        wrappers {
+            buildName('\$PIPELINE_VERSION')
+        }
+
+        steps {
+            shell 'sleep 10'
+        }
+
+        // publishers {
+        //     buildPipelineTrigger('Demo/DeployProd') {
         //     }
         // }
-        downstream('Terraform/env-dev-plan', 'SUCCESS')
-    }
-}
-
-
-job('Terraform/env-dev-plan') {
-    deliveryPipelineConfiguration("env-dev", "Plan")
-
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
     }
 
-    steps {
-        shell 'sleep 5'
-    }
+    // job('Demo/DeployProd') {
+    //     deliveryPipelineConfiguration("Prod", "Deploy")
 
-    publishers {
-        buildPipelineTrigger('Terraform/env-dev-apply')
-    }
-}
+    //     wrappers {
+    //         buildName('\$PIPELINE_VERSION')
+    //     }
 
-job('Terraform/env-dev-apply') {
-    deliveryPipelineConfiguration("env-dev", "Apply")
+    //     steps {
+    //         shell 'sleep 5'
+    //     }
 
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
+    //     publishers {
+    //         downstreamParameterized {
+    //             trigger('Demo/TestProd') {
+    //                 condition('SUCCESS')
+    //                 parameters {
+    //                     currentBuild()
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    steps {
-        shell 'sleep 10'
-    }
+    // job('Demo/TestProd') {
+    //     deliveryPipelineConfiguration("Prod", "Test")
 
+    //     wrappers {
+    //         buildName('\$PIPELINE_VERSION')
+    //     }
 
-    publishers {
-       downstream('Terraform/env-prod-plan', 'SUCCESS')
-    }
-}
-
-job('Terraform/env-prod-plan') {
-    deliveryPipelineConfiguration("env-prod", "Plan")
-
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
-
-    steps {
-        shell 'sleep 5'
-    }
-
-    publishers {
-        publishers {
-        buildPipelineTrigger('Terraform/env-prod-apply')
-    }
-    }
-}
-
-job('Terraform/env-prod-apply') {
-    deliveryPipelineConfiguration("env-prod", "Apply")
-
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
-
-    steps {
-        shell 'sleep 10'
-    }
-
-    // publishers {
-    //     buildPipelineTrigger('Demo/DeployProd') {
+    //     steps {
+    //         shell 'sleep 5'
     //     }
     // }
 }
-
-// job('Demo/DeployProd') {
-//     deliveryPipelineConfiguration("Prod", "Deploy")
-
-//     wrappers {
-//         buildName('\$PIPELINE_VERSION')
-//     }
-
-//     steps {
-//         shell 'sleep 5'
-//     }
-
-//     publishers {
-//         downstreamParameterized {
-//             trigger('Demo/TestProd') {
-//                 condition('SUCCESS')
-//                 parameters {
-//                     currentBuild()
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// job('Demo/TestProd') {
-//     deliveryPipelineConfiguration("Prod", "Test")
-
-//     wrappers {
-//         buildName('\$PIPELINE_VERSION')
-//     }
-
-//     steps {
-//         shell 'sleep 5'
-//     }
-// }
