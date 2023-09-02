@@ -5,10 +5,9 @@ import org.yaml.snakeyaml.Yaml
 
 def yamlDir = "jenkins-job-test/cicd/configs"
 
-checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/faisalp4p/jenkins-job-test.git']]])
+// checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/faisalp4p/jenkins-job-test.git']]])
 
-def yamlFiles = findFiles(glob: "${yamlDir}/*.yaml")
-
+git branch: 'mybranch', url: 'https://github.com/faisalp4p/jenkins-job-test.git'
 
 def findFiles(def args) {
     def step = findFiles(args)
@@ -65,6 +64,8 @@ def makePiepine(def stage) {
         makePiepine(stage.next)
     }
 }
+
+def yamlFiles = findFiles(glob: "${yamlDir}/*.yaml")
 
 yamlFiles.each { yamlFile ->
     def yamlContent = readFile(yamlFile.toString())
