@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-for (int i = 1; i <= 5; i++) {
+// for (int i = 1; i <= 5; i++) {
     folder("Terraform")
 
     deliveryPipelineView("Terraform/Pipeline-${i}") {
@@ -11,11 +11,11 @@ for (int i = 1; i <= 5; i++) {
         showChangeLog()
         showDescription()
         pipelines {
-            component("Terraform env pipeline-${i}", "Terraform/Build")
+            component("Terraform env pipeline-${i}", "Build")
         }
     }
 
-    job("Terraform/Build") {
+    job("Build") {
         deliveryPipelineConfiguration("Build", "Build")
         wrappers {
             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
@@ -34,12 +34,12 @@ for (int i = 1; i <= 5; i++) {
             //         }
             //     }
             // }
-            downstream("Terraform/env-dev-plan", 'SUCCESS')
+            downstream("env-dev-plan", 'SUCCESS')
         }
     }
 
 
-    job("Terraform/env-dev-plan") {
+    job("env-dev-plan") {
         deliveryPipelineConfiguration("env-dev-${i}", "Plan")
 
         wrappers {
@@ -51,11 +51,11 @@ for (int i = 1; i <= 5; i++) {
         }
 
         publishers {
-            buildPipelineTrigger("Terraform/env-dev-apply")
+            buildPipelineTrigger("env-dev-apply")
         }
     }
 
-    job("Terraform/env-dev-apply") {
+    job("env-dev-apply") {
         deliveryPipelineConfiguration("env-dev-${i}", "Apply")
 
         wrappers {
@@ -68,11 +68,11 @@ for (int i = 1; i <= 5; i++) {
 
 
         publishers {
-        downstream("Terraform/env-prod-plan", 'SUCCESS')
+        downstream("env-prod-plan", 'SUCCESS')
         }
     }
 
-    job("Terraform/env-prod-plan") {
+    job("env-prod-plan") {
         deliveryPipelineConfiguration("env-prod-${i}", "Plan")
 
         wrappers {
@@ -90,7 +90,7 @@ for (int i = 1; i <= 5; i++) {
         }
     }
 
-    job("Terraform/env-prod-apply") {
+    job("env-prod-apply") {
         deliveryPipelineConfiguration("env-prod-${i}", "Apply")
 
         wrappers {
@@ -141,4 +141,4 @@ for (int i = 1; i <= 5; i++) {
     //         shell 'sleep 5'
     //     }
     // }
-}
+// }
