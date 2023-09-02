@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
+folder('Terraform')
 
-
-deliveryPipelineView('Demo/Pipeline') {
+deliveryPipelineView('Terraform/Pipeline') {
     pipelineInstances(5)
     allowPipelineStart()
     enableManualTriggers()
@@ -10,11 +10,11 @@ deliveryPipelineView('Demo/Pipeline') {
     showChangeLog()
     showDescription()
     pipelines {
-        component('Component', 'Build')
+        component('Component', 'Terraform/Build')
     }
 }
 
-job('Build') {
+job('Terraform/Build') {
     deliveryPipelineConfiguration("Build", "Build")
     scm {
         git {
