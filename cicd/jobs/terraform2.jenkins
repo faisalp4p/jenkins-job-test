@@ -1,5 +1,7 @@
 
-// import groovy.yaml.YamlSlurper
+@Grab('org.yaml:snakeyaml:1.17')
+
+import org.yaml.snakeyaml.Yaml
 
 def yamlDir = "jenkins-job-test/cicd/configs"
 
@@ -64,8 +66,8 @@ def makePiepine(def stage) {
 }
 
 yamlFiles.each { yamlFile ->
-    // def yamlContent = readFile(yamlFile.toString())
-    def config = readYaml file: "${yamlFile}"
+    def yamlContent = readFile(yamlFile.toString())
+    def config = new Yaml().load(yamlContent)
 
     deliveryPipelineView("Terraform - Pipeline ${config.repo}") {
         pipelineInstances(5)
