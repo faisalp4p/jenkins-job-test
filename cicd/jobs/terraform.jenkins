@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
-// for (int i = 1; i <= 5; i++) {
+for (int i = 1; i <= 5; i++) {
     // folder("Terraform")
 
-    deliveryPipelineView("Terraform - Pipeline") {
+    deliveryPipelineView("Terraform - Pipeline ${i}") {
         pipelineInstances(5)
         allowPipelineStart()
         enableManualTriggers()
@@ -11,11 +11,11 @@
         showChangeLog()
         showDescription()
         pipelines {
-            component("Terraform env pipeline", "Build")
+            component("Terraform env pipeline ${i}", "Build-${i}")
         }
     }
 
-    job("Build") {
+    job("Build-${i}") {
         deliveryPipelineConfiguration("Build", "Build")
         wrappers {
             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
@@ -34,12 +34,12 @@
             //         }
             //     }
             // }
-            downstream("env-dev-plan", 'SUCCESS')
+            downstream("env-dev-plan-${i}", 'SUCCESS')
         }
     }
 
 
-    job("env-dev-plan") {
+    job("env-dev-plan-${i}") {
         deliveryPipelineConfiguration("env-dev", "Plan")
 
         wrappers {
@@ -51,11 +51,11 @@
         }
 
         publishers {
-            buildPipelineTrigger("env-dev-apply")
+            buildPipelineTrigger("env-dev-apply-${i}")
         }
     }
 
-    job("env-dev-apply") {
+    job("env-dev-apply-${i}") {
         deliveryPipelineConfiguration("env-dev", "Apply")
 
         wrappers {
@@ -68,11 +68,11 @@
 
 
         publishers {
-        downstream("env-prod-plan", 'SUCCESS')
+        downstream("env-prod-plan-${i}", 'SUCCESS')
         }
     }
 
-    job("env-prod-plan") {
+    job("env-prod-plan-${i}") {
         deliveryPipelineConfiguration("env-prod", "Plan")
 
         wrappers {
@@ -85,12 +85,12 @@
 
         publishers {
             publishers {
-            buildPipelineTrigger("env-prod-apply")
+            buildPipelineTrigger("env-prod-apply-${i}")
         }
         }
     }
 
-    job("env-prod-apply") {
+    job("env-prod-apply-${i}") {
         deliveryPipelineConfiguration("env-prod", "Apply")
 
         wrappers {
@@ -141,4 +141,4 @@
     //         shell 'sleep 5'
     //     }
     // }
-// }
+}
