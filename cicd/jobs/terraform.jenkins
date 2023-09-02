@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 // for (int i = 1; i <= 5; i++) {
-    folder("Terraform")
+    // folder("Terraform")
 
-    deliveryPipelineView("Terraform/Pipeline") {
+    deliveryPipelineView("Terraform - Pipeline") {
         pipelineInstances(5)
         allowPipelineStart()
         enableManualTriggers()
@@ -85,7 +85,7 @@
 
         publishers {
             publishers {
-            buildPipelineTrigger("Terraform/env-prod-apply")
+            buildPipelineTrigger("env-prod-apply")
         }
         }
     }
