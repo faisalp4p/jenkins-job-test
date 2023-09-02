@@ -1,6 +1,5 @@
 #!/usr/bin/env groovy
 
-folder('Demo')
 
 deliveryPipelineView('Demo/Pipeline') {
     pipelineInstances(5)
@@ -15,7 +14,7 @@ deliveryPipelineView('Demo/Pipeline') {
     }
 }
 
-job('Demo/Build') {
+job('Build') {
     deliveryPipelineConfiguration("Build", "Build")
     scm {
         git {
@@ -41,33 +40,13 @@ job('Demo/Build') {
         //         }
         //     }
         // }
-        downstream('Demo/Sonar', 'SUCCESS')
-        buildPipelineTrigger('Demo/DeployCI')
+        downstream('Terraform/env-dev-plan', 'SUCCESS')
     }
 }
 
-job('Demo/Sonar') {
-    deliveryPipelineConfiguration("Build", "Static code analysis")
-    scm {
-        git {
-            remote {
-                url('https://github.com/Diabol/delivery-pipeline-plugin')
-            }
-        }
-    }
 
-
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
-
-    steps {
-        shell 'sleep 10'
-    }
-}
-
-job('Demo/DeployCI') {
-    deliveryPipelineConfiguration("CI", "Deploy")
+job('Terraform/env-dev-plan') {
+    deliveryPipelineConfiguration("env-dev", "Plan")
 
     wrappers {
         buildName('\$PIPELINE_VERSION')
@@ -78,19 +57,13 @@ job('Demo/DeployCI') {
     }
 
     publishers {
-        downstreamParameterized {
-            trigger('Demo/TestCI') {
-                condition('SUCCESS')
-                parameters {
-                    currentBuild()
-                }
-            }
+        buildPipelineTrigger('Terraform/env-dev-apply') {
         }
     }
 }
 
-job('Demo/TestCI') {
-    deliveryPipelineConfiguration("CI", "Test")
+job('Terraform/env-dev-apply') {
+    deliveryPipelineConfiguration("env-dev", "Apply")
 
     wrappers {
         buildName('\$PIPELINE_VERSION')
@@ -102,13 +75,12 @@ job('Demo/TestCI') {
 
 
     publishers {
-        buildPipelineTrigger('Demo/DeployQA') {
-        }
+       downstream('Terraform/env-prod-pla', 'SUCCESS')
     }
 }
 
-job('Demo/DeployQA') {
-    deliveryPipelineConfiguration("QA", "Deploy")
+job('Terraform/env-prod-plan') {
+    deliveryPipelineConfiguration("env-prod", "Plan")
 
     wrappers {
         buildName('\$PIPELINE_VERSION')
@@ -119,19 +91,15 @@ job('Demo/DeployQA') {
     }
 
     publishers {
-        downstreamParameterized {
-            trigger('Demo/TestQA') {
-                condition('SUCCESS')
-                parameters {
-                    currentBuild()
-                }
-            }
+        publishers {
+        buildPipelineTrigger('Terraform/env-prod-apply') {
         }
+    }
     }
 }
 
-job('Demo/TestQA') {
-    deliveryPipelineConfiguration("QA", "Test")
+job('Terraform/env-prod-apply') {
+    deliveryPipelineConfiguration("env-prod", "Apply")
 
     wrappers {
         buildName('\$PIPELINE_VERSION')
@@ -141,43 +109,43 @@ job('Demo/TestQA') {
         shell 'sleep 10'
     }
 
-    publishers {
-        buildPipelineTrigger('Demo/DeployProd') {
-        }
-    }
+    // publishers {
+    //     buildPipelineTrigger('Demo/DeployProd') {
+    //     }
+    // }
 }
 
-job('Demo/DeployProd') {
-    deliveryPipelineConfiguration("Prod", "Deploy")
+// job('Demo/DeployProd') {
+//     deliveryPipelineConfiguration("Prod", "Deploy")
 
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
+//     wrappers {
+//         buildName('\$PIPELINE_VERSION')
+//     }
 
-    steps {
-        shell 'sleep 5'
-    }
+//     steps {
+//         shell 'sleep 5'
+//     }
 
-    publishers {
-        downstreamParameterized {
-            trigger('Demo/TestProd') {
-                condition('SUCCESS')
-                parameters {
-                    currentBuild()
-                }
-            }
-        }
-    }
-}
+//     publishers {
+//         downstreamParameterized {
+//             trigger('Demo/TestProd') {
+//                 condition('SUCCESS')
+//                 parameters {
+//                     currentBuild()
+//                 }
+//             }
+//         }
+//     }
+// }
 
-job('Demo/TestProd') {
-    deliveryPipelineConfiguration("Prod", "Test")
+// job('Demo/TestProd') {
+//     deliveryPipelineConfiguration("Prod", "Test")
 
-    wrappers {
-        buildName('\$PIPELINE_VERSION')
-    }
+//     wrappers {
+//         buildName('\$PIPELINE_VERSION')
+//     }
 
-    steps {
-        shell 'sleep 5'
-    }
-}
+//     steps {
+//         shell 'sleep 5'
+//     }
+// }
