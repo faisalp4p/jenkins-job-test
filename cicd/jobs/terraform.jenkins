@@ -67,7 +67,7 @@ job('Terraform/env-dev-apply') {
 
 
     publishers {
-       downstream('Terraform/env-prod-pla', 'SUCCESS')
+       downstream('Terraform/env-prod-plan', 'SUCCESS')
     }
 }
 
