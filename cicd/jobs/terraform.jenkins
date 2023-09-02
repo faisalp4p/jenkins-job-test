@@ -57,8 +57,7 @@ job('Terraform/env-dev-plan') {
     }
 
     publishers {
-        buildPipelineTrigger('Terraform/env-dev-apply') {
-        }
+        buildPipelineTrigger('Terraform/env-dev-apply')
     }
 }
 
@@ -92,8 +91,7 @@ job('Terraform/env-prod-plan') {
 
     publishers {
         publishers {
-        buildPipelineTrigger('Terraform/env-prod-apply') {
-        }
+        buildPipelineTrigger('Terraform/env-prod-apply')
     }
     }
 }
