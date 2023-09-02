@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 for (int i = 1; i <= 5; i++) {
-    folder("Terraform $i")
+    folder("Terraform ${i}")
 
-    deliveryPipelineView("Terraform/Pipeline $i") {
+    deliveryPipelineView("Terraform/Pipeline-${i}") {
         pipelineInstances(5)
         allowPipelineStart()
         enableManualTriggers()
@@ -11,11 +11,11 @@ for (int i = 1; i <= 5; i++) {
         showChangeLog()
         showDescription()
         pipelines {
-            component("Terraform env pipeline $i", "Terraform/Build $i")
+            component("Terraform env pipeline-${i}", "Terraform/Build-${i}")
         }
     }
 
-    job("Terraform/Build $i") {
+    job("Terraform/Build-${i}") {
         deliveryPipelineConfiguration("Build", "Build")
         wrappers {
             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
@@ -34,13 +34,13 @@ for (int i = 1; i <= 5; i++) {
             //         }
             //     }
             // }
-            downstream("Terraform/env-dev-plan $i", 'SUCCESS')
+            downstream("Terraform/env-dev-plan-${i}", 'SUCCESS')
         }
     }
 
 
-    job("Terraform/env-dev-plan $i") {
-        deliveryPipelineConfiguration("env-dev $i", "Plan")
+    job("Terraform/env-dev-plan-${i}") {
+        deliveryPipelineConfiguration("env-dev-${i}", "Plan")
 
         wrappers {
             buildName('\$PIPELINE_VERSION')
@@ -51,12 +51,12 @@ for (int i = 1; i <= 5; i++) {
         }
 
         publishers {
-            buildPipelineTrigger("Terraform/env-dev-apply $i")
+            buildPipelineTrigger("Terraform/env-dev-apply-${i}")
         }
     }
 
-    job("Terraform/env-dev-apply $i") {
-        deliveryPipelineConfiguration("env-dev $i", "Apply")
+    job("Terraform/env-dev-apply-${i}") {
+        deliveryPipelineConfiguration("env-dev-${i}", "Apply")
 
         wrappers {
             buildName('\$PIPELINE_VERSION')
@@ -68,12 +68,12 @@ for (int i = 1; i <= 5; i++) {
 
 
         publishers {
-        downstream("Terraform/env-prod-plan $i", 'SUCCESS')
+        downstream("Terraform/env-prod-plan-${i}", 'SUCCESS')
         }
     }
 
-    job("Terraform/env-prod-plan $i") {
-        deliveryPipelineConfiguration("env-prod $i", "Plan")
+    job("Terraform/env-prod-plan-${i}") {
+        deliveryPipelineConfiguration("env-prod-${i}", "Plan")
 
         wrappers {
             buildName('\$PIPELINE_VERSION')
@@ -85,13 +85,13 @@ for (int i = 1; i <= 5; i++) {
 
         publishers {
             publishers {
-            buildPipelineTrigger("Terraform/env-prod-apply $i")
+            buildPipelineTrigger("Terraform/env-prod-apply ${i}")
         }
         }
     }
 
-    job("Terraform/env-prod-apply $i") {
-        deliveryPipelineConfiguration("env-prod $i", "Apply")
+    job("Terraform/env-prod-apply-${i}") {
+        deliveryPipelineConfiguration("env-prod-${i}", "Apply")
 
         wrappers {
             buildName('\$PIPELINE_VERSION')
