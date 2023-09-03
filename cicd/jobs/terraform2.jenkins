@@ -1,98 +1,102 @@
 
-@Grab('org.yaml:snakeyaml:1.17')
+// @Grab('org.yaml:snakeyaml:1.17')
 
-import org.yaml.snakeyaml.Yaml
+// import org.yaml.snakeyaml.Yaml
 
-def yamlDir = "jenkins-job-test/cicd/configs"
+// def yamlDir = "jenkins-job-test/cicd/configs"
 
-// checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/faisalp4p/jenkins-job-test.git']]])
+// // checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/faisalp4p/jenkins-job-test.git']]])
 
-git branch: 'mybranch', url: 'https://github.com/faisalp4p/jenkins-job-test.git'
+// git branch: 'mybranch', url: 'https://github.com/faisalp4p/jenkins-job-test.git'
 
-def findFiles(def args) {
-    def step = findFiles(args)
-    step.setDelegate(build)
-    step.setBinding(build.executor, build.workspace)
-    step.call()
-}
+// def findFiles(def args) {
+//     def step = findFiles(args)
+//     step.setDelegate(build)
+//     step.setBinding(build.executor, build.workspace)
+//     step.call()
+// }
 
-def makeStage(def dir, def dStream) {
-    job("${dir}-plan") {
-        deliveryPipelineConfiguration("${dir}", "Plan")
+// def makeStage(def dir, def dStream) {
+//     job("${dir}-plan") {
+//         deliveryPipelineConfiguration("${dir}", "Plan")
 
-        wrappers {
-            buildName('\$PIPELINE_VERSION')
-        }
+//         wrappers {
+//             buildName('\$PIPELINE_VERSION')
+//         }
 
-        steps {
-            shell 'pwd && ls'
-        }
+//         steps {
+//             shell 'pwd && ls'
+//         }
 
-        publishers {
-            buildPipelineTrigger("${dir}-apply")
-        }
-    }
+//         publishers {
+//             buildPipelineTrigger("${dir}-apply")
+//         }
+//     }
 
-     job("${dir}-apply") {
-        deliveryPipelineConfiguration("${dir}", "Apply")
+//      job("${dir}-apply") {
+//         deliveryPipelineConfiguration("${dir}", "Apply")
 
-        wrappers {
-            buildName('\$PIPELINE_VERSION')
-        }
+//         wrappers {
+//             buildName('\$PIPELINE_VERSION')
+//         }
 
-        steps {
-            shell 'sleep 10'
-        }
+//         steps {
+//             shell 'sleep 10'
+//         }
 
-        if (dStream?.trim()) {
-            publishers {
-                downstream("${dStream}-plan", 'SUCCESS')
-            }
-        }
-    }
+//         if (dStream?.trim()) {
+//             publishers {
+//                 downstream("${dStream}-plan", 'SUCCESS')
+//             }
+//         }
+//     }
 
-}
+// }
 
-def makePiepine(def stage) {  
-    if (stage.next) {
-        dStream = stage.next
-    } else {
-        dStream = ""
-    }
-    makeStage(stage.dir, dStream)
-    if (stage.next) {
-        makePiepine(stage.next)
-    }
-}
+// def makePiepine(def stage) {  
+//     if (stage.next) {
+//         dStream = stage.next
+//     } else {
+//         dStream = ""
+//     }
+//     makeStage(stage.dir, dStream)
+//     if (stage.next) {
+//         makePiepine(stage.next)
+//     }
+// }
 
-def yamlFiles = findFiles(glob: "${yamlDir}/*.yaml")
+// def yamlFiles = findFiles(glob: "${yamlDir}/*.yaml")
 
-yamlFiles.each { yamlFile ->
-    def yamlContent = readFile(yamlFile.toString())
-    def config = new Yaml().load(yamlContent)
+// yamlFiles.each { yamlFile ->
+//     def yamlContent = readFile(yamlFile.toString())
+//     def config = new Yaml().load(yamlContent)
 
-    deliveryPipelineView("Terraform - Pipeline ${config.repo}") {
-        pipelineInstances(5)
-        allowPipelineStart()
-        enableManualTriggers()
-        enablePaging()
-        linkToConsoleLog()
-        showChangeLog()
-        showDescription()
-        pipelines {
-            component("Terraform env pipeline ${config.repo}", "Build-${config.repo}")
-        }
-    }
+//     deliveryPipelineView("Terraform - Pipeline ${config.repo}") {
+//         pipelineInstances(5)
+//         allowPipelineStart()
+//         enableManualTriggers()
+//         enablePaging()
+//         linkToConsoleLog()
+//         showChangeLog()
+//         showDescription()
+//         pipelines {
+//             component("Terraform env pipeline ${config.repo}", "Build-${config.repo}")
+//         }
+//     }
 
-    job("Build-${config.repo}") {
-        deliveryPipelineConfiguration("Build", "Build")
-        wrappers {
-            deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
-        }
-        publishers {
-            downstream("${config.pipeline.dir}-plan", 'SUCCESS')
-        }
-    }
-    makePiepine(config.pipeline)
+//     job("Build-${config.repo}") {
+//         deliveryPipelineConfiguration("Build", "Build")
+//         wrappers {
+//             deliveryPipelineVersion('1.0.0.\$BUILD_NUMBER', true)
+//         }
+//         publishers {
+//             downstream("${config.pipeline.dir}-plan", 'SUCCESS')
+//         }
+//     }
+//     makePiepine(config.pipeline)
 
-}
+// }
+def ls = "ls -l".execute().text
+def pwd = "pwd".execute().text
+println ls
+println pwd
