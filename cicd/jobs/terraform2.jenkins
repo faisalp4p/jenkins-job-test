@@ -104,7 +104,7 @@ def jenkinsInstance = Jenkins.instance
 
 def gitRepoUrl = "https://github.com/faisalp4p/jenkins-job-test.git"
 
-def workspace = jenkinsInstance.workspaceFor(TopLevelItem.class).child("seed-job-workspace")
+def workspace = jenkinsInstance.getWorkspaceFor(TopLevelItem.class).child("seed-job-workspace")
 
 checkout([
     $class: 'GitSCM',
