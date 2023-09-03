@@ -98,3 +98,5 @@
 // }
 
 println "${WORKSPACE}"
+def ls = "ls -l ${WORKSPACE}".execute()
+println ls
