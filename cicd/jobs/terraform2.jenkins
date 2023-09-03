@@ -96,11 +96,33 @@
 //     makePiepine(config.pipeline)
 
 // }
+import hudson.model.*
+import hudson.util.*
+import jenkins.model.*
 
-gitRepoUrl = "https://github.com/faisalp4p/jenkins-job-test.git"
+def jenkinsInstance = Jenkins.instance
+
+def gitRepoUrl = "https://github.com/faisalp4p/jenkins-job-test.git"
+
+def workspace = jenkinsInstance.workspaceFor(TopLevelItem.class).child("seed-job-workspace")
+
 checkout([
-            $class: 'GitSCM',
-            userRemoteConfigs: [
-                [url: gitRepoUrl],
-            ],
+    $class: 'GitSCM',
+    branches: [[name: '*/main']], // Change to your desired branch
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [
+        [$class: 'CleanBeforeCheckout'],
+        [$class: 'CloneOption', noTags: true, shallow: true, depth: 1],
+        [$class: 'LocalBranch', localBranch: 'main'],
+        [$class: 'RelativeTargetDirectory', relativeTargetDir: 'seed-job-workspace']
+    ],
+    submoduleCfg: [],
+    userRemoteConfigs: [
+        [url: gitRepoUrl]
+    ]
 ])
+
+dh = new File("ls -l ${workspace}")
+dh.eachFile {
+    println(it)
+}
