@@ -96,7 +96,6 @@
 //     makePiepine(config.pipeline)
 
 // }
-def ls = "ls -l".execute().text
-def pwd = "pwd".execute().text
-println ls
-println pwd
+"mkdir /tmp/foo".execute()
+"git pull https://github.com/faisalp4p/jenkins-job-test.git /tmp/foo".execute()
+"ls /tmp/foo".execute()
