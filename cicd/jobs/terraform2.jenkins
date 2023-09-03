@@ -98,4 +98,5 @@
 // }
 "mkdir /tmp/foo".execute()
 "git pull https://github.com/faisalp4p/jenkins-job-test.git /tmp/foo".execute()
-"ls /tmp/foo".execute()
+def ls = "ls /tmp/foo".execute().text
+println "${ls}"
