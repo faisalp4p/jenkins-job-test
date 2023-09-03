@@ -97,6 +97,8 @@
 
 // }
 
-println "${WORKSPACE}"
-def ls = "ls -l ${WORKSPACE}".execute()
-println ls
+
+dh = new File("${WORKSPACE}")
+dh.eachFile {
+    println(it)
+}
