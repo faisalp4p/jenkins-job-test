@@ -97,8 +97,10 @@
 
 // }
 
-
-dh = new File("${WORKSPACE}")
-dh.eachFile {
-    println(it)
-}
+gitRepoUrl = "https://github.com/faisalp4p/jenkins-job-test.git"
+checkout([
+            $class: 'GitSCM',
+            userRemoteConfigs: [
+                [url: gitRepoUrl],
+            ],
+])
