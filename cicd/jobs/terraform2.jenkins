@@ -98,33 +98,34 @@
 // }
 import hudson.model.*
 import hudson.util.*
+import hudson.plugins.git.Git
+import jenkins.model.*
 
 
 // def jenkinsInstance = Jenkins.instance
 
 def gitRepoUrl = "https://github.com/faisalp4p/jenkins-job-test.git"
 
-def workspace = build.getWorkspace()
+def jenkinsInstance = Jenkins.instance
+def workspace = jenkinsInstance.rootPath.child("seed-job-workspace")
 
-workspace.act {
-    checkout([
-        $class: 'GitSCM',
-        branches: [[name: '*/main']], // Change to your desired branch
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [
-            [$class: 'CleanBeforeCheckout'],
-            [$class: 'CloneOption', noTags: true, shallow: true, depth: 1],
-            [$class: 'LocalBranch', localBranch: 'main'],
-            [$class: 'RelativeTargetDirectory', relativeTargetDir: 'seed-job-workspace']
-        ],
-        submoduleCfg: [],
-        userRemoteConfigs: [
-            [url: gitRepoUrl]
-        ]
-    ])
-}
+def gitSCM = new Git([
+    branches: [[name: '*/main']], // Change to your desired branch
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [
+        [$class: 'CleanBeforeCheckout'],
+        [$class: 'CloneOption', noTags: true, shallow: true, depth: 1],
+        [$class: 'LocalBranch', localBranch: 'main'],
+        [$class: 'RelativeTargetDirectory', relativeTargetDir: 'seed-job-workspace']
+    ],
+    submoduleCfg: [],
+    userRemoteConfigs: [
+        [url: gitRepoUrl]
+    ]
+])
+gitSCM.clone(workspace, new StreamBuildListener(System.out, Charset.defaultCharset()), null, null)
 
-dh = new File("ls -l ${workspace}/seed-job-workspace/")
+dh = new File("ls -l ${workspace}/")
 dh.eachFile {
     println(it)
 }
